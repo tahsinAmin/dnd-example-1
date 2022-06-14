@@ -6,7 +6,7 @@
 
 ## Tutorial video:
 
-- https://youtu.be/ALFuC2bWaZs?t=639
+- https://youtu.be/ALFuC2bWaZs?t=3019
 
-<!-- What this man is missing in his video:
- Segmenting the part with some headings for redirecting that part- Adding hastags and use the word Chakra in title -->
+  <!-- What this man is missing in his video:
+   Segmenting the part with some headings for redirecting that part- Adding hastags and use the word Chakra in title -->

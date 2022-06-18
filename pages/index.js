@@ -3,109 +3,117 @@ import dynamic from "next/dynamic";
 import React, { useState } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 
-// const Column = dynamic(() => import("../src/Column"), { ssr: false })
-const Column = dynamic(() => import("../src/Column"), { ssr: false });
+const Column = dynamic(() => import("../components/Column"), { ssr: false });
 
 const reorderColumnList = (sourceCol, startIndex, endIndex) => {
   const newTaskIds = Array.from(sourceCol.taskIds);
-  const [removed] = newTaskIds.splice(startIndex, 1)
+  const [removed] = newTaskIds.splice(startIndex, 1);
   newTaskIds.splice(endIndex, 0, removed);
 
   const newColumn = {
     ...sourceCol,
     taskIds: newTaskIds,
-  }
+  };
+
   return newColumn;
-}
+};
 
 export default function Home() {
-  const [state, setState] = useState(initialData)
+  const [state, setState] = useState(initialData);
 
   const onDragEnd = (result) => {
     const { destination, source } = result;
 
-    // if user tries to drop in an unknown desitnation
+    // If user tries to drop in an unknown destination
     if (!destination) return;
 
-    // if the user drag and drops back in the same position
-    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+    // if the user drags and drops back in the same position
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
       return;
     }
 
-    // if the user drops within the same column but in a different position
+    // If the user drops within the same column but in a different position
     const sourceCol = state.columns[source.droppableId];
     const destinationCol = state.columns[destination.droppableId];
 
     if (sourceCol.id === destinationCol.id) {
-      const newColumn = reorderColumnList(sourceCol, source.index, destination.index)
+      const newColumn = reorderColumnList(
+        sourceCol,
+        source.index,
+        destination.index
+      );
 
       const newState = {
         ...state,
         columns: {
           ...state.columns,
-          [newColumn.id]: newColumn
+          [newColumn.id]: newColumn,
         },
       };
       setState(newState);
       return;
     }
 
-
-    //  if the user moves from one column to another.
+    // If the user moves from one column to another
     const startTaskIds = Array.from(sourceCol.taskIds);
     const [removed] = startTaskIds.splice(source.index, 1);
     const newStartCol = {
       ...sourceCol,
       taskIds: startTaskIds,
-    }
+    };
 
-    const endTaskIds = Array.from(destinationCol.taskIds)
+    const endTaskIds = Array.from(destinationCol.taskIds);
     endTaskIds.splice(destination.index, 0, removed);
     const newEndCol = {
       ...destinationCol,
-      taskIds: endTaskIds
+      taskIds: endTaskIds,
     };
 
     const newState = {
       ...state,
       columns: {
+        ...state.columns,
         [newStartCol.id]: newStartCol,
         [newEndCol.id]: newEndCol,
       },
     };
 
-    setState(newState)
+    setState(newState);
+  };
 
-  }
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Flex
-        flexDir={'column'}
-        bg='main-bg'
-        minH='100vh'
-        w='full'
-        color='white-text'
-        pb='2rem'
+        flexDir="column"
+        bg="main-bg"
+        minH="100vh"
+        w="full"
+        color="white-text"
+        pb="2rem"
       >
-        <Flex py='4rem' flexDir={'column'} align='center'>
-          <Heading fontSize='3xl' fontWeight={600}>
-            React Beuatiful dRag and Drop
+        <Flex py="4rem" flexDir="column" align="center">
+          <Heading fontSize="3xl" fontWeight={600}>
+            Kanban Board
           </Heading>
-          <Text fontSize='20px' fontWeight={600} color='subtle-text'>
-            react-beautiful-dnd
-          </Text>
+          {/* <Text fontSize="20px" fontWeight={600} color="subtle-text">
+            
+          </Text> */}
         </Flex>
 
-        <Flex justify={'space-between'} px='4rem'>
+        <Flex justify="space-between" px="4rem" >
           {state.columnOrder.map((columnId) => {
             const column = state.columns[columnId];
-            const tasks = column.taskIds.map(taskId => state.tasks[taskId])
+            const tasks = column.taskIds.map((taskId) => state.tasks[taskId]);
+
             return <Column key={column.id} column={column} tasks={tasks} />;
           })}
         </Flex>
       </Flex>
     </DragDropContext>
-  )
+  );
 }
 
 const initialData = {
